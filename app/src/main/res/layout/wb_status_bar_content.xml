@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 标题（可选，launcher通常不显示） -->
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"
+        android:textSize="16sp"
+        android:textColor="#FF000000"/>
+
+    <!-- 时间显示（居中） -->
+    <com.webuild.statusbar.ui.WbTimeView
+        android:id="@+id/tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#FF000000"/>
+
+    <!-- 电池状态（右侧） -->
+    <com.webuild.statusbar.ui.WbBatterStateView
+        android:id="@+id/tv_battery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="3dp"
+        android:layout_alignParentEnd="true"/>
+
+</merge>

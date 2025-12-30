@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="wb_status_bar_height">22.33dp</dimen>
+</resources>

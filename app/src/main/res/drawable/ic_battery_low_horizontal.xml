@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 妯悜鐢垫睜浣庣數锟?- 绾㈣壊璀﹀憡 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 鐢垫睜澶栨 -->
+    <path
+        android:fillColor="#FF5555"
+        android:pathData="M20,8v8c0,0.66 -0.53,1.2 -1.2,1.2H4.2C3.53,17.2 3,16.66 3,16V8c0,-0.66 0.53,-1.2 1.2,-1.2h14.6C19.47,6.8 20,7.34 20,8zM18,9H5v6h13V9z"/>
+    <!-- 鐢垫睜姝ｆ瀬 -->
+    <path
+        android:fillColor="#FF5555"
+        android:pathData="M21,10v4h1v-4z"/>
+    <!-- 鐢甸噺鏄剧ず锛堜綆锟?-->
+    <path
+        android:fillColor="#FF5555"
+        android:pathData="M6,10h3v4H6z"/>
+</vector>
+

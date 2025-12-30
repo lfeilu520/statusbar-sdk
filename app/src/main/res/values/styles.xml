@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="StatusBarStyle">
+        <!-- 标题文字设置为透明，不显示标题 -->
+        <item name="android:textColor">@android:color/transparent</item>
+        <item name="android:textSize">0sp</item>
+        <item name="android:background">@drawable/wb_status_bar_bg</item>
+        <item name="android:maxHeight">@dimen/wb_status_bar_height</item>
+        <item name="android:minHeight">@dimen/wb_status_bar_height</item>
+        <item name="android:paddingStart">3.67dp</item>
+        <item name="android:paddingEnd">3.67dp</item>
+    </style>
+
+    <!-- 状态栏背景样式 - 白色背景 -->
+    <style name="StatusBarBackground">
+        <item name="android:background">@drawable/wb_status_bar_bg</item>
+    </style>
+</resources>

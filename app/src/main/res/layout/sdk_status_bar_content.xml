@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    android:background="@drawable/wb_status_bar_bg">
+
+    <com.webuild.statusbar.ui.WbNetworkStateView
+        android:id="@+id/sdk_network"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"/>
+
+    <com.webuild.statusbar.ui.WbTimeView
+        android:id="@+id/sdk_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FF000000"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_centerHorizontal="true"/>
+
+    <com.webuild.statusbar.ui.WbBatterStateView
+        android:id="@+id/sdk_battery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"/>
+
+    <com.webuild.statusbar.ui.WbBluetoothStateView
+        android:id="@+id/sdk_bluetooth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/sdk_network"
+        android:layout_marginStart="8dp"
+        android:layout_centerVertical="true"/>
+
+</RelativeLayout>
