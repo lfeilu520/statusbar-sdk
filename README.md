@@ -22,7 +22,7 @@ Android 状态栏 SDK。提供自定义状态栏视图（网络/蓝牙/时间/�
     ```
   - 在目标项目 `dependencies` 添加：
     ```
-    implementation("com.github.<你的GitHub用户名>:statusbar-sdk:v0.1.0")
+    implementation("com.github.lfeilu520:statusbar-sdk:v0.1.0")
     ```
 - GitHub Packages（自动发布）
   - 仓库已配置 Actions，推送 Tag `v*` 将自动：
@@ -32,7 +32,7 @@ Android 状态栏 SDK。提供自定义状态栏视图（网络/蓝牙/时间/�
     ```
     repositories {
       maven {
-        url = uri("https://maven.pkg.github.com/<owner>/<repo>")
+        url = uri("https://maven.pkg.github.com/lfeilu520/statusbar-sdk")
         credentials {
           username = System.getenv("GITHUB_ACTOR")
           password = System.getenv("GITHUB_TOKEN")
@@ -42,7 +42,7 @@ Android 状态栏 SDK。提供自定义状态栏视图（网络/蓝牙/时间/�
     ```
     然后在 `dependencies`：
     ```
-    implementation("com.webuild:statusbar-sdk:<tag版本>")
+    implementation("com.github.lfeilu520:statusbar-sdk:v0.1.0")
     ```
 
 ## 接口
