@@ -4,14 +4,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Typeface;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.graphics.Typeface;
+
 import androidx.appcompat.widget.AppCompatTextView;
-import com.webuild.statusbar.ui.base.BaseWatcher;
+
 import com.webuild.statusbar.R;
+import com.webuild.statusbar.ui.base.BaseWatcher;
 
 import java.util.Locale;
 
@@ -220,7 +223,15 @@ public class WbBatterStateView extends AppCompatTextView {
             this.isRegister = true;
             IntentFilter filter = new IntentFilter();
             filter.addAction(Intent.ACTION_BATTERY_CHANGED);
-            this.mContext.registerReceiver(this.mReceiver, filter);
+            
+            // Android 14+ 需要指定 receiver export 标志
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                this.mContext.registerReceiver(this.mReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                this.mContext.registerReceiver(this.mReceiver, filter);
+            }
+            
+            // 获取粘性广播以获取初始状态
             Intent sticky = this.mContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
             if (sticky != null) {
                 int level = sticky.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);

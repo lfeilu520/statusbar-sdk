@@ -29,12 +29,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // 关键：在 setContentView 之前调用 prepare()，确保系统状态栏从一开始就不显示
+        StatusBarController.prepare(this);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
 
+        // 安装自定义状态栏
         StatusBarConfig config = StatusBarConfig.white(this);
         StatusBarController.install(this, config);
 

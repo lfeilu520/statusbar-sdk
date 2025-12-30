@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="12dp"
-    android:paddingEnd="12dp"
+    android:paddingStart="6dp"
+    android:paddingEnd="6dp"
     android:background="@drawable/wb_status_bar_bg">
 
     <com.webuild.statusbar.ui.WbNetworkStateView

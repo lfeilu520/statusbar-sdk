@@ -5,10 +5,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.util.AttributeSet;
+
 import androidx.appcompat.widget.AppCompatImageView;
+
 import com.webuild.statusbar.R;
 import com.webuild.statusbar.ui.base.BaseWatcher;
+
 import java.lang.reflect.Method;
 
 /**
@@ -161,7 +165,13 @@ public class WbBluetoothStateView extends AppCompatImageView {
             IntentFilter filter = new IntentFilter();
             filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
             filter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
-            this.mContext.registerReceiver(this.mReceiver, filter);
+            
+            // Android 14+ 需要指定 receiver export 标志
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                this.mContext.registerReceiver(this.mReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                this.mContext.registerReceiver(this.mReceiver, filter);
+            }
             
             // 初始化当前状态
             try {

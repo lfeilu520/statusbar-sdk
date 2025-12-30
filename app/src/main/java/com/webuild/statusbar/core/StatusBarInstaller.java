@@ -16,9 +16,10 @@ public final class StatusBarInstaller {
     private StatusBarInstaller() {}
 
     public static void install(Activity activity, StatusBarConfig config) {
+        // 立即准备窗口，隐藏系统状态栏
+        WindowHelper.prepareForCustomStatusBar(activity);
+        
         Window window = activity.getWindow();
-        WindowCompat.setDecorFitsSystemWindows(window, false);
-        window.setStatusBarColor(Color.TRANSPARENT);
         ViewGroup decorView = (ViewGroup) window.getDecorView();
         View existing = decorView.findViewById(R.id.sdk_status_bar);
         if (existing == null) {

@@ -5,13 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
+
 import com.webuild.statusbar.R;
 import com.webuild.statusbar.ui.base.BaseWatcher;
 
@@ -41,8 +47,7 @@ public class WbNetworkStateView extends AppCompatImageView {
         // 按照原始实现：空方法
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public void changeStatusIcon(int i) {
+    private void changeStatusIcon(int i) {
         if (i <= 0) {
             setVisibility(GONE);
         } else {
@@ -70,13 +75,16 @@ public class WbNetworkStateView extends AppCompatImageView {
 
     /**
      * 网络状态监听器
-     * 使用单例模式，多个View共享同一个广播接收器
+     * 使用单例模式，多个View共享同一个NetworkCallback
      */
     public static class NetworkStateWatcher extends BaseWatcher<WbNetworkStateView> {
         private static NetworkStateWatcher sInstance;
         private boolean isRegister;
         private int mLastResId;
-        private final BroadcastReceiver mReceiver;
+        private final Handler mHandler = new Handler(Looper.getMainLooper());
+        private final Runnable mUpdateRunnable = this::notifyChange;
+        private ConnectivityManager.NetworkCallback mNetworkCallback;
+        private final BroadcastReceiver mWifiRssiReceiver;
 
         public static NetworkStateWatcher obtainWatcher(Context context) {
             if (sInstance == null) {
@@ -94,74 +102,97 @@ public class WbNetworkStateView extends AppCompatImageView {
             this.mLastResId = -1;
             this.isRegister = false;
             
-            // 创建广播接收器，延迟250ms更新避免频繁刷新
-            this.mReceiver = new BroadcastReceiver() {
-                private final Handler mHandler = new Handler(Looper.getMainLooper());
-                private final Runnable mRunnable = () -> notifyChange();
-
+            // WiFi信号强度变化广播接收器
+            this.mWifiRssiReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
-                    mHandler.removeCallbacks(mRunnable);
-                    mHandler.postDelayed(mRunnable, 250L);
+                    scheduleUpdate();
                 }
             };
         }
 
+        private void scheduleUpdate() {
+            mHandler.removeCallbacks(mUpdateRunnable);
+            mHandler.postDelayed(mUpdateRunnable, 250L);
+        }
+
         @Override
-        public boolean watch(final WbNetworkStateView WbNetworkStateView) {
-            boolean zWatch = super.watch(WbNetworkStateView);  // 修复：移除错误的类型转换
+        public boolean watch(final WbNetworkStateView view) {
+            boolean result = super.watch(view);
             if (!this.isRegister) {
                 register();
             }
-            WbNetworkStateView.post(new Runnable() {
-                @Override
-                public final void run() {
-                    NetworkStateWatcher.this.lambda$watch$0$WbNetworkStateView$NetworkStateWatcher(WbNetworkStateView);
-                }
-            });
-            return zWatch;
+            view.post(() -> view.changeStatusIcon(this.mLastResId));
+            return result;
         }
 
-        /* synthetic */ void lambda$watch$0$WbNetworkStateView$NetworkStateWatcher(WbNetworkStateView WbNetworkStateView) {
-            WbNetworkStateView.changeStatusIcon(this.mLastResId);
-        }
-
-        @Override // com.launcher.demo.widget.statusbar.base.BaseWatcher
-        public boolean unwatch(WbNetworkStateView WbNetworkStateView) {
-            boolean zUnwatch = super.unwatch(WbNetworkStateView);  // 修复：移除错误的类型转换
+        @Override
+        public boolean unwatch(WbNetworkStateView view) {
+            boolean result = super.unwatch(view);
             if (this.isRegister && this.mListView.isEmpty()) {
                 unregister();
                 release();
             }
-            return zUnwatch;
+            return result;
         }
 
         private void register() {
             this.isRegister = true;
-            IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-            intentFilter.addAction("android.net.wifi.WIFI_STATE_CHANGED");
-            intentFilter.addAction("android.net.wifi.RSSI_CHANGED");
-            intentFilter.addAction("android.net.wifi.WIFI_AP_STATE_CHANGED");
-            this.mContext.registerReceiver(this.mReceiver, intentFilter);
+            ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm != null) {
+                // 使用现代 NetworkCallback API
+                mNetworkCallback = new ConnectivityManager.NetworkCallback() {
+                    @Override
+                    public void onAvailable(@NonNull Network network) {
+                        scheduleUpdate();
+                    }
+
+                    @Override
+                    public void onLost(@NonNull Network network) {
+                        scheduleUpdate();
+                    }
+
+                    @Override
+                    public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities capabilities) {
+                        scheduleUpdate();
+                    }
+                };
+                
+                NetworkRequest request = new NetworkRequest.Builder()
+                        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                        .build();
+                cm.registerNetworkCallback(request, mNetworkCallback);
+            }
+            
+            // 注册WiFi RSSI变化广播 (用于信号强度更新)
+            IntentFilter filter = new IntentFilter(WifiManager.RSSI_CHANGED_ACTION);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                mContext.registerReceiver(mWifiRssiReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                mContext.registerReceiver(mWifiRssiReceiver, filter);
+            }
+            
             notifyChange();
         }
 
-        /**
-         * 注销广播接收器
-         */
         private void unregister() {
+            ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (cm != null && mNetworkCallback != null) {
+                try {
+                    cm.unregisterNetworkCallback(mNetworkCallback);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
             try {
-                this.mContext.unregisterReceiver(this.mReceiver);
+                mContext.unregisterReceiver(mWifiRssiReceiver);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            mHandler.removeCallbacks(mUpdateRunnable);
             this.isRegister = false;
         }
 
-        /**
-         * 通知所有View更新状态
-         */
         private void notifyChange() {
             int currentResId = getCurrentNetworkInfo(this.mContext);
             if (this.mLastResId == currentResId) {
@@ -175,7 +206,7 @@ public class WbNetworkStateView extends AppCompatImageView {
         }
 
         /**
-         * 获取当前网络状态对应的图标资源ID
+         * 获取当前网络状态对应的图标资源ID（使用现代API）
          */
         public static int getCurrentNetworkInfo(Context context) {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -183,20 +214,23 @@ public class WbNetworkStateView extends AppCompatImageView {
                 return -1;
             }
 
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            if (activeNetwork == null || !activeNetwork.isAvailable()) {
+            Network activeNetwork = cm.getActiveNetwork();
+            if (activeNetwork == null) {
                 return -1;
             }
 
-            int type = activeNetwork.getType();
-            
+            NetworkCapabilities caps = cm.getNetworkCapabilities(activeNetwork);
+            if (caps == null) {
+                return -1;
+            }
+
             // 以太网
-            if (type == ConnectivityManager.TYPE_ETHERNET) {
+            if (caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
                 return R.drawable.ic_status_ethernet;
             }
             
             // WiFi
-            if (type == ConnectivityManager.TYPE_WIFI) {
+            if (caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
                 WifiManager wifiManager = (WifiManager) context.getApplicationContext()
                         .getSystemService(Context.WIFI_SERVICE);
                 if (wifiManager != null) {
@@ -204,15 +238,14 @@ public class WbNetworkStateView extends AppCompatImageView {
                     if (wifiInfo != null) {
                         int rssi = wifiInfo.getRssi();
                         
-                        // 根据信号强度返回不同图标
                         if (rssi > 0) {
-                            return -1;  // 无效信号
+                            return -1;
                         } else if (rssi >= -50) {
-                            return R.drawable.ic_status_wifi_signal_3;  // 强信号
+                            return R.drawable.ic_status_wifi_signal_3;
                         } else if (rssi >= -80) {
-                            return R.drawable.ic_status_wifi_signal_2;  // 中信号
+                            return R.drawable.ic_status_wifi_signal_2;
                         } else if (rssi >= -100) {
-                            return R.drawable.ic_status_wifi_signal_1;  // 弱信号
+                            return R.drawable.ic_status_wifi_signal_1;
                         }
                     }
                 }
@@ -220,7 +253,7 @@ public class WbNetworkStateView extends AppCompatImageView {
             }
             
             // 移动网络
-            if (type == ConnectivityManager.TYPE_MOBILE) {
+            if (caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
                 return R.drawable.ic_status_cellular;
             }
             

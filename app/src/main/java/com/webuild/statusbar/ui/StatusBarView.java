@@ -34,7 +34,7 @@ public class StatusBarView extends FrameLayout {
             setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
         ViewCompat.setOnApplyWindowInsetsListener(this, (v, insets) -> {
-            int top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            int top = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.statusBars()).top;
             if (top == 0) {
                 if (fallbackHeight < 0) {
                     int resId = getResources().getIdentifier("status_bar_height", "dimen", "android");

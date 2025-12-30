@@ -1,9 +1,21 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Statusbarsdk" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- 从应用启动时就隐藏系统状态栏，使用自定义状态栏 -->
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <!-- Edge-to-edge 布局 -->
+        <item name="android:fitsSystemWindows">false</item>
     </style>
 
     <style name="Theme.Statusbarsdk" parent="Base.Theme.Statusbarsdk" />
+    
+    <!-- SDK专用主题：完全隐藏系统状态栏 -->
+    <style name="Theme.StatusBarSdk.FullCustom" parent="Base.Theme.Statusbarsdk">
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:fitsSystemWindows">false</item>
+    </style>
 </resources>

@@ -6,15 +6,19 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 
 import androidx.appcompat.widget.AppCompatTextView;
+
 import com.webuild.statusbar.R;
+
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
@@ -64,16 +68,10 @@ public class WbTimeView extends AppCompatTextView {
     }
 
     private void initShow() {
-        post(new Runnable() {
-            @Override
-            public void run() {
-                WbTimeView.this.onUpdateTime_12_24();
-            }
-        });
+        post(this::onUpdateTime_12_24);
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public void onUpdateTime_12_24() {
+    private void onUpdateTime_12_24() {
         if (DateFormat.is24HourFormat(getContext())) {
             this.mFormatResId = R.string.wb_time_format_24;
         } else {
@@ -82,12 +80,10 @@ public class WbTimeView extends AppCompatTextView {
         onUpdateTime();
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
-    public void onUpdateTime() {
+    private void onUpdateTime() {
         setText(DateFormat.format(getContext().getText(this.mFormatResId), System.currentTimeMillis()));
     }
 
-    /* JADX INFO: Access modifiers changed from: private */
     static class TimeWatcher {
         private static TimeWatcher sInstance;
         private final Context mContext;
@@ -95,20 +91,18 @@ public class WbTimeView extends AppCompatTextView {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
-                if ("android.intent.action.TIME_TICK".equals(action)) {
-                    TimeWatcher.this.notifyUpdateTime();
-                } else if ("android.intent.action.TIME_SET".equals(action)) {
-                    TimeWatcher.this.notifyUpdateTime();
-                } else if ("android.intent.action.TIMEZONE_CHANGED".equals(action)) {
-                    TimeWatcher.this.notifyUpdateTime();
+                if (Intent.ACTION_TIME_TICK.equals(action) ||
+                    Intent.ACTION_TIME_CHANGED.equals(action) ||
+                    Intent.ACTION_TIMEZONE_CHANGED.equals(action)) {
+                    notifyUpdateTime();
                 }
             }
         };
-        private final ContentObserver mObserver = new ContentObserver(null) {
+        private final ContentObserver mObserver = new ContentObserver(new Handler(Looper.getMainLooper())) {
             @Override
-            public void onChange(boolean z) {
-                super.onChange(z);
-                TimeWatcher.this.notifyUpdateTime_12_24();
+            public void onChange(boolean selfChange) {
+                super.onChange(selfChange);
+                notifyUpdateTime_12_24();
             }
         };
         private final List<WbTimeView> mListView = new CopyOnWriteArrayList<>();
@@ -129,24 +123,35 @@ public class WbTimeView extends AppCompatTextView {
             this.mContext = context.getApplicationContext();
         }
 
-        void watch(WbTimeView WbTimeView) {
-            this.mListView.add(WbTimeView);
+        void watch(WbTimeView view) {
+            this.mListView.add(view);
             if (this.mListView.isEmpty() || this.isRegister) {
                 return;
             }
             this.isRegister = true;
             IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction("android.intent.action.TIME_TICK");
-            intentFilter.addAction("android.intent.action.TIME_SET");
-            intentFilter.addAction("android.intent.action.TIMEZONE_CHANGED");
-            this.mContext.registerReceiver(this.mReceiver, intentFilter);
-            this.mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor("time_12_24"), false, this.mObserver);
+            intentFilter.addAction(Intent.ACTION_TIME_TICK);
+            intentFilter.addAction(Intent.ACTION_TIME_CHANGED);
+            intentFilter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
+            
+            // Android 14+ 需要指定 receiver export 标志
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                this.mContext.registerReceiver(this.mReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                this.mContext.registerReceiver(this.mReceiver, intentFilter);
+            }
+            this.mContext.getContentResolver().registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.TIME_12_24), false, this.mObserver);
         }
 
-        void unwatch(WbTimeView WbTimeView) {
-            this.mListView.remove(WbTimeView);
+        void unwatch(WbTimeView view) {
+            this.mListView.remove(view);
             if (this.mListView.isEmpty() && this.isRegister) {
-                this.mContext.unregisterReceiver(this.mReceiver);
+                try {
+                    this.mContext.unregisterReceiver(this.mReceiver);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 this.mContext.getContentResolver().unregisterContentObserver(this.mObserver);
                 this.isRegister = false;
                 release();
@@ -154,26 +159,18 @@ public class WbTimeView extends AppCompatTextView {
         }
 
         protected void notifyUpdateTime_12_24() {
-            for (final WbTimeView WbTimeView : this.mListView) {
-                Objects.requireNonNull(WbTimeView);
-                WbTimeView.post(new Runnable() {
-                    @Override
-                    public final void run() {
-                        WbTimeView.onUpdateTime_12_24();
-                    }
-                });
+            for (final WbTimeView view : this.mListView) {
+                if (view != null) {
+                    view.post(view::onUpdateTime_12_24);
+                }
             }
         }
 
         protected void notifyUpdateTime() {
-            for (final WbTimeView WbTimeView : this.mListView) {
-                Objects.requireNonNull(WbTimeView);
-                WbTimeView.post(new Runnable() {
-                    @Override
-                    public final void run() {
-                        WbTimeView.onUpdateTime();
-                    }
-                });
+            for (final WbTimeView view : this.mListView) {
+                if (view != null) {
+                    view.post(view::onUpdateTime);
+                }
             }
         }
     }
