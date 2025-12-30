@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "statusbar-sdk"
 include(":app")
+include(":sdk")
  
