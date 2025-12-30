@@ -39,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(binding.toolbar);
 
         // 安装自定义状态栏
-        StatusBarConfig config = StatusBarConfig.white(this);
+        StatusBarConfig config = StatusBarConfig.whiteFixed(this, 32);
+        config.networkClickable = true;
         StatusBarController.install(this, config);
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);

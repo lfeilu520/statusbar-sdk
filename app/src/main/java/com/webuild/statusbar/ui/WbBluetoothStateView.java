@@ -41,7 +41,7 @@ public class WbBluetoothStateView extends AppCompatImageView {
         setImageResource(R.drawable.ic_status_bluetooth);
         setAdjustViewBounds(true);
         setScaleType(android.widget.ImageView.ScaleType.FIT_CENTER);
-        setMaxHeight(dpToPx(16));
+        setMaxHeight(dpToPx(30));
         setVisibility(VISIBLE);  // 默认显示
     }
 

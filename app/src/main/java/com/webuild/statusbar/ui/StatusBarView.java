@@ -12,6 +12,8 @@ import androidx.core.view.WindowInsetsCompat;
 public class StatusBarView extends FrameLayout {
     private boolean interceptTouch = false;
     private int fallbackHeight = -1;
+    private int fixedHeightPx = 0;
+    private boolean useSystemInsets = true;
 
     public StatusBarView(Context context) {
         super(context);
@@ -34,18 +36,14 @@ public class StatusBarView extends FrameLayout {
             setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
         ViewCompat.setOnApplyWindowInsetsListener(this, (v, insets) -> {
-            int top = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.statusBars()).top;
+            int top;
+            if (!useSystemInsets) {
+                top = fixedHeightPx > 0 ? fixedHeightPx : fallback();
+            } else {
+                top = insets.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.statusBars()).top;
+            }
             if (top == 0) {
-                if (fallbackHeight < 0) {
-                    int resId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-                    if (resId > 0) {
-                        fallbackHeight = getResources().getDimensionPixelSize(resId);
-                    } else {
-                        float density = getResources().getDisplayMetrics().density;
-                        fallbackHeight = (int) (24 * density);
-                    }
-                }
-                top = fallbackHeight;
+                top = fallback();
             }
             ViewGroup.LayoutParams lp = v.getLayoutParams();
             if (lp == null) {
@@ -77,6 +75,29 @@ public class StatusBarView extends FrameLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         return interceptTouch;
+    }
+
+    public void setFixedHeightPx(int px) {
+        this.fixedHeightPx = Math.max(0, px);
+        ViewCompat.requestApplyInsets(this);
+    }
+
+    public void setUseSystemInsets(boolean use) {
+        this.useSystemInsets = use;
+        ViewCompat.requestApplyInsets(this);
+    }
+
+    private int fallback() {
+        if (fallbackHeight < 0) {
+            int resId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+            if (resId > 0) {
+                fallbackHeight = getResources().getDimensionPixelSize(resId);
+            } else {
+                float density = getResources().getDisplayMetrics().density;
+                fallbackHeight = (int) (24 * density);
+            }
+        }
+        return fallbackHeight;
     }
 }
 

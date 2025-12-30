@@ -46,12 +46,12 @@ public class WbBatterStateView extends AppCompatTextView {
 
     private void init() {
         setTextColor(0xFF000000);
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
         setTypeface(getTypeface(), Typeface.BOLD);
         setIncludeFontPadding(false);
         setSingleLine(true);
         setGravity(Gravity.CENTER_VERTICAL);
-        setCompoundDrawablePadding(dpToPx(4));
+        setCompoundDrawablePadding(dpToPx(3));
         setBatteryCharging(false);
         setBatteryLevel(100);  // 默认显示100%
     }
@@ -105,8 +105,8 @@ public class WbBatterStateView extends AppCompatTextView {
         // 加载图标并设置大小
         android.graphics.drawable.Drawable icon = getContext().getDrawable(iconRes);
         if (icon != null) {
-            int width = Math.round(icon.getIntrinsicWidth() * 1.3f);
-            int height = Math.round(icon.getIntrinsicHeight() * 1.3f);
+            int width = Math.round(icon.getIntrinsicWidth() * 1.8f);
+            int height = Math.round(icon.getIntrinsicHeight() * 1.8f);
             icon.setBounds(0, 0, width, height);
         }
         
