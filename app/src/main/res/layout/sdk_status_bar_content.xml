@@ -2,16 +2,28 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="1dp"
-    android:paddingEnd="1dp"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
     android:background="@drawable/wb_status_bar_bg">
+
+    <TextView
+        android:id="@+id/sdk_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#FF000000"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:singleLine="true"
+        android:visibility="gone"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="0dp"
+        android:layout_centerVertical="true"/>
 
     <com.webuild.statusbar.ui.WbNetworkStateView
         android:id="@+id/sdk_network"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@id/sdk_title"
         android:layout_centerVertical="true"/>
 
     <com.webuild.statusbar.ui.WbTimeView
@@ -36,7 +48,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/sdk_network"
-        android:layout_marginStart="8dp"
         android:layout_centerVertical="true"/>
 
 </RelativeLayout>

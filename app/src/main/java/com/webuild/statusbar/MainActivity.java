@@ -40,6 +40,13 @@ public class MainActivity extends AppCompatActivity {
 
         // 安装自定义状态栏
         StatusBarConfig config = StatusBarConfig.whiteFixed(this, 32);
+        config.useXmlContent = false;
+        config.showNetwork = true;
+        config.showBluetooth = true;
+        config.showTime = true;
+        config.showBattery = true;
+        config.showTitle = false;
+        config.titleText = "状态栏";
         config.networkClickable = true;
         StatusBarController.install(this, config);
 

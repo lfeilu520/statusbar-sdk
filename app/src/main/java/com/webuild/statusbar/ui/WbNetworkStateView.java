@@ -47,7 +47,7 @@ public class WbNetworkStateView extends AppCompatImageView {
     private void init() {
         setAdjustViewBounds(true);
         setScaleType(android.widget.ImageView.ScaleType.FIT_CENTER);
-        setMaxHeight(dpToPx(22));
+        setMaxHeight(dpToPx(30));
         setOnClickListener(v -> {
             if (!clickEnabled) return;
             showNetworkDialog();

@@ -40,7 +40,7 @@ public class WbTimeView extends AppCompatTextView {
         super(context, attributeSet, i);
         this.mFormatResId = R.string.wb_time_format_24;
         setTextColor(0xFF000000);  // 黑色文字
-        setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+        setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
     }
 
     @Override

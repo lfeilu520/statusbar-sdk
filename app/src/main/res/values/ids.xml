@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="sdk_status_bar" type="id"/>
+    <item name="sdk_network" type="id"/>
+    <item name="sdk_time" type="id"/>
+    <item name="sdk_battery" type="id"/>
+    <item name="sdk_bluetooth" type="id"/>
+    <item name="sdk_title" type="id"/>
 </resources>
 

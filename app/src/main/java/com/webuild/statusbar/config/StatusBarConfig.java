@@ -12,6 +12,13 @@ public class StatusBarConfig {
     public int fixedHeightPx;
     public boolean useSystemInsets = true;
     public boolean networkClickable = false;
+    public boolean useXmlContent = true;
+    public boolean showNetwork = true;
+    public boolean showBluetooth = true;
+    public boolean showTime = true;
+    public boolean showBattery = true;
+    public boolean showTitle = false;
+    public CharSequence titleText;
 
     public StatusBarConfig() {}
 
@@ -22,6 +29,12 @@ public class StatusBarConfig {
         c.interceptTouch = true;
         c.useSystemInsets = true;
         c.networkClickable = false;
+        c.useXmlContent = true;
+        c.showNetwork = true;
+        c.showBluetooth = true;
+        c.showTime = true;
+        c.showBattery = true;
+        c.showTitle = false;
         return c;
     }
 
@@ -32,6 +45,12 @@ public class StatusBarConfig {
         c.interceptTouch = false;
         c.useSystemInsets = true;
         c.networkClickable = false;
+        c.useXmlContent = true;
+        c.showNetwork = true;
+        c.showBluetooth = true;
+        c.showTime = true;
+        c.showBattery = true;
+        c.showTitle = false;
         return c;
     }
 
@@ -41,6 +60,8 @@ public class StatusBarConfig {
         c.fixedHeightPx = Math.round(dp * d);
         c.useSystemInsets = false;
         c.networkClickable = false;
+        c.useXmlContent = true;
+        c.showTitle = false;
         return c;
     }
 }

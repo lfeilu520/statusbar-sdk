@@ -88,6 +88,62 @@ public final class StatusBarController {
         WindowHelper.showSystemBars(activity);
     }
 
+    public static void setTitleVisible(@NonNull Activity activity, boolean visible) {
+        StatusBarView v = get(activity);
+        if (v == null) return;
+        android.widget.TextView title = v.findViewById(R.id.sdk_title);
+        com.webuild.statusbar.ui.WbNetworkStateView net = v.findViewById(R.id.sdk_network);
+        if (title == null && visible) {
+            android.widget.RelativeLayout root = findRootRelative(v);
+            if (root != null) {
+                title = new android.widget.TextView(activity);
+                title.setId(R.id.sdk_title);
+                title.setTextColor(0xFF000000);
+                title.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 18);
+                title.setTypeface(title.getTypeface(), android.graphics.Typeface.BOLD);
+                title.setSingleLine(true);
+                android.widget.RelativeLayout.LayoutParams lp = new android.widget.RelativeLayout.LayoutParams(
+                        android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+                        android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+                lp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_START);
+                lp.addRule(android.widget.RelativeLayout.CENTER_VERTICAL);
+                lp.setMarginStart(0);
+                root.addView(title, lp);
+            }
+        }
+        if (title != null) {
+            title.setVisibility(visible ? android.view.View.VISIBLE : android.view.View.GONE);
+        }
+        if (net != null) {
+            android.widget.RelativeLayout.LayoutParams lp = (android.widget.RelativeLayout.LayoutParams) net.getLayoutParams();
+            if (visible) {
+                lp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_START, 0);
+                lp.addRule(android.widget.RelativeLayout.END_OF, R.id.sdk_title);
+                lp.setMarginStart(dp(activity, 8));
+            } else {
+                lp.addRule(android.widget.RelativeLayout.END_OF, 0);
+                lp.addRule(android.widget.RelativeLayout.ALIGN_PARENT_START);
+                lp.setMarginStart(0);
+            }
+            net.setLayoutParams(lp);
+        }
+    }
+
+    public static void setTitleText(@NonNull Activity activity, @NonNull CharSequence text) {
+        StatusBarView v = get(activity);
+        if (v == null) return;
+        android.widget.TextView title = v.findViewById(R.id.sdk_title);
+        if (title == null) {
+            setTitleVisible(activity, true);
+            title = v.findViewById(R.id.sdk_title);
+        }
+        if (title != null) {
+            title.setText(text);
+            title.setVisibility(android.view.View.VISIBLE);
+        }
+    }
+
     /**
      * 获取已安装的自定义状态栏View
      * @return StatusBarView 或 null（如果未安装）
@@ -97,6 +153,21 @@ public final class StatusBarController {
         Window window = activity.getWindow();
         ViewGroup decorView = (ViewGroup) window.getDecorView();
         return decorView.findViewById(R.id.sdk_status_bar);
+    }
+
+    private static int dp(@NonNull Activity activity, int dp) {
+        return Math.round(dp * activity.getResources().getDisplayMetrics().density);
+    }
+
+    @Nullable
+    private static android.widget.RelativeLayout findRootRelative(@NonNull StatusBarView v) {
+        for (int i = 0; i < v.getChildCount(); i++) {
+            android.view.View child = v.getChildAt(i);
+            if (child instanceof android.widget.RelativeLayout) {
+                return (android.widget.RelativeLayout) child;
+            }
+        }
+        return null;
     }
 }
 
