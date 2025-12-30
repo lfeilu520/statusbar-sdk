@@ -8,6 +8,9 @@ import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.webuild.statusbar.R;
 import com.webuild.statusbar.config.StatusBarConfig;
@@ -127,6 +130,41 @@ public final class StatusBarInstaller {
             WindowHelper.setLightStatusBar(activity, config.lightIcons);
         }
         WindowHelper.hideSystemStatusBar(activity);
+
+        // 4. 确保内容不被状态栏遮挡
+        final ViewGroup contentView = activity.findViewById(android.R.id.content);
+        final View sbView = decorView.findViewById(R.id.sdk_status_bar);
+        if (contentView != null && sbView != null) {
+            // 4.1 拦截 WindowInsets，屏蔽系统状态栏的高度，防止子 View 重复处理
+            ViewCompat.setOnApplyWindowInsetsListener(contentView, (v, insets) -> {
+                // 将状态栏高度设为 0，这样 fitsSystemWindows="true" 的子 View 就不会留出系统状态栏的空间
+                // 而是完全由下面的 OnLayoutChangeListener 来控制 padding
+                WindowInsetsCompat.Builder builder = new WindowInsetsCompat.Builder(insets);
+                builder.setInsets(WindowInsetsCompat.Type.statusBars(), Insets.of(0, 0, 0, 0));
+                return ViewCompat.onApplyWindowInsets(v, builder.build());
+            });
+
+            // 4.2 根据自定义状态栏的实际高度，设置 contentView 的 padding
+            sbView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                           int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    int height = bottom - top;
+                    if (height > 0 && height != contentView.getPaddingTop()) {
+                        contentView.setPadding(contentView.getPaddingLeft(), height,
+                                contentView.getPaddingRight(), contentView.getPaddingBottom());
+                    }
+                }
+            });
+            // 立即触发一次更新（如果已有尺寸）
+            if (sbView.getHeight() > 0) {
+                int height = sbView.getHeight();
+                if (height != contentView.getPaddingTop()) {
+                    contentView.setPadding(contentView.getPaddingLeft(), height,
+                            contentView.getPaddingRight(), contentView.getPaddingBottom());
+                }
+            }
+        }
     }
 
     private static void setupDynamicContent(@NonNull Activity activity, @NonNull StatusBarView container, @Nullable StatusBarConfig config) {
