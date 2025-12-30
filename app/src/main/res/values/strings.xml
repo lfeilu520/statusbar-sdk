@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">statusbar-sdk</string>
     <string name="wb_time_format_24">HH:mm</string>
-    <string name="wb_time_format_12">h:mm</string>
+    <string name="wb_time_format_12">hh:mm</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>

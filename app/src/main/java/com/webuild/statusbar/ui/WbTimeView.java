@@ -13,6 +13,7 @@ import android.provider.Settings;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.graphics.Typeface;
 
 import androidx.appcompat.widget.AppCompatTextView;
 
@@ -41,6 +42,7 @@ public class WbTimeView extends AppCompatTextView {
         this.mFormatResId = R.string.wb_time_format_24;
         setTextColor(0xFF000000);  // 黑色文字
         setTextSize(TypedValue.COMPLEX_UNIT_SP, 22);
+        setTypeface(getTypeface(), Typeface.BOLD);
     }
 
     @Override
