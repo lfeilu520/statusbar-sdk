@@ -6,48 +6,62 @@
     android:paddingEnd="8dp"
     android:background="@drawable/wb_status_bar_bg">
 
-    <TextView
-        android:id="@+id/sdk_title"
+    <LinearLayout
+        android:id="@+id/left_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#FF000000"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:singleLine="true"
-        android:visibility="gone"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:baselineAligned="false"
         android:layout_alignParentStart="true"
-        android:layout_marginStart="0dp"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true">
 
-    <com.webuild.statusbar.ui.WbNetworkStateView
-        android:id="@+id/sdk_network"
+        <com.webuild.statusbar.ui.TimeView
+            android:id="@+id/sdk_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FF000000"
+            android:textStyle="bold"
+            android:textSize="22sp"/>
+
+        <TextView
+            android:id="@+id/sdk_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="#FF000000"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:singleLine="true"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/right_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/sdk_title"
-        android:layout_centerVertical="true"/>
-
-    <com.webuild.statusbar.ui.WbTimeView
-        android:id="@+id/sdk_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#FF000000"
-        android:textStyle="bold"
-        android:textSize="22sp"
-        android:layout_centerHorizontal="true"/>
-
-    <com.webuild.statusbar.ui.WbBatterStateView
-        android:id="@+id/sdk_battery"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical|end"
+        android:baselineAligned="false"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="8dp"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true">
 
-    <com.webuild.statusbar.ui.WbBluetoothStateView
-        android:id="@+id/sdk_bluetooth"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/sdk_network"
-        android:layout_centerVertical="true"/>
+        <com.webuild.statusbar.ui.BluetoothView
+            android:id="@+id/sdk_bluetooth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"/>
+
+        <com.webuild.statusbar.ui.NetworkView
+            android:id="@+id/sdk_network"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"/>
+
+        <com.webuild.statusbar.ui.BatteryView
+            android:id="@+id/sdk_battery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
 </RelativeLayout>

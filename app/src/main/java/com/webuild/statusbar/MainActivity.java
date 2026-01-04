@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(binding.toolbar);
 
         // 安装自定义状态栏
-        StatusBarConfig config = StatusBarConfig.whiteFixed(this, 32);
-        config.useXmlContent = false;
+        StatusBarConfig config = StatusBarConfig.whiteFixed(this, 30);
+        config.useXmlContent = true;
         config.showNetwork = true;
         config.showBluetooth = true;
         config.showTime = true;

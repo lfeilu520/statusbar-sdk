@@ -100,3 +100,4 @@ public class StatusBarView extends FrameLayout {
         return fallbackHeight;
     }
 }
+

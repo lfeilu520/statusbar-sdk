@@ -11,15 +11,29 @@ import com.webuild.statusbar.R;
 import com.webuild.statusbar.config.StatusBarConfig;
 import com.webuild.statusbar.core.StatusBarInstaller;
 import com.webuild.statusbar.core.WindowHelper;
+import com.webuild.statusbar.ui.NetworkView;
 import com.webuild.statusbar.ui.StatusBarView;
 
+/**
+ * StatusBar SDK ��������
+ * ʹ�� WindowInsetsControllerCompat ͳһ����ϵͳ״̬��
+ */
 public final class StatusBarController {
     private StatusBarController() {}
 
+    /**
+     * ׼��������ʹ���Զ���״̬��
+     * Ӧ���� Activity.onCreate() �� super.onCreate() ֮��setContentView() ֮ǰ����
+     * ��������ȷ��ϵͳ״̬����һ��ʼ�Ͳ���ʾ
+     */
     public static void prepare(@NonNull Activity activity) {
         WindowHelper.prepareForCustomStatusBar(activity);
     }
 
+    /**
+     * ��װ�Զ���״̬��
+     * ������ setContentView() ֮ǰ��֮�����
+     */
     public static void install(@NonNull Activity activity, @Nullable StatusBarConfig config) {
         StatusBarInstaller.install(activity, config);
     }
@@ -39,9 +53,11 @@ public final class StatusBarController {
         }
     }
 
+
     public static void setLightMode(@NonNull Activity activity, boolean light) {
         WindowHelper.setLightStatusBar(activity, light);
     }
+
 
     public static void hideSystemStatusBar(@NonNull Activity activity) {
         WindowHelper.hideSystemStatusBar(activity);
@@ -50,6 +66,7 @@ public final class StatusBarController {
     public static void showSystemStatusBar(@NonNull Activity activity) {
         WindowHelper.showSystemStatusBar(activity);
     }
+
 
     public static void hideSystemBars(@NonNull Activity activity) {
         WindowHelper.hideSystemBars(activity);
@@ -63,7 +80,7 @@ public final class StatusBarController {
         StatusBarView v = get(activity);
         if (v == null) return;
         android.widget.TextView title = v.findViewById(R.id.sdk_title);
-        com.webuild.statusbar.ui.WbNetworkStateView net = v.findViewById(R.id.sdk_network);
+        NetworkView net = v.findViewById(R.id.sdk_network);
         if (title == null && visible) {
             android.widget.RelativeLayout root = findRootRelative(v);
             if (root != null) {
@@ -137,3 +154,4 @@ public final class StatusBarController {
         return null;
     }
 }
+

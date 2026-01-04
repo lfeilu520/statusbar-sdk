@@ -11,6 +11,7 @@ import com.webuild.statusbar.R;
 import com.webuild.statusbar.config.StatusBarConfig;
 import com.webuild.statusbar.core.StatusBarInstaller;
 import com.webuild.statusbar.core.WindowHelper;
+import com.webuild.statusbar.ui.NetworkView;
 import com.webuild.statusbar.ui.StatusBarView;
 
 /**
@@ -92,7 +93,7 @@ public final class StatusBarController {
         StatusBarView v = get(activity);
         if (v == null) return;
         android.widget.TextView title = v.findViewById(R.id.sdk_title);
-        com.webuild.statusbar.ui.WbNetworkStateView net = v.findViewById(R.id.sdk_network);
+        NetworkView net = v.findViewById(R.id.sdk_network);
         if (title == null && visible) {
             android.widget.RelativeLayout root = findRootRelative(v);
             if (root != null) {
